@@ -53,7 +53,9 @@ func (e *Editor) Publish(ctx context.Context, id string) error {
 	}
 	rep := validation.ValidateRecord(r)
 	if !rep.Valid() {
-		_ = rep.Error() /* injected swallowed error */
+		// Missing material must block publishing: return the failure and
+		// leave the existing record untouched so draft content is preserved.
+		return rep.Error()
 	}
 	if err = validation.CheckPublishable(ctx, r); err != nil {
 		return err
